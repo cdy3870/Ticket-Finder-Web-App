@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ticket Finder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src = "https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <script src="{{ url_for('static', filename='scripts/script.js') }}"></script>
+    <!-- <script src="{{ url_for('static', filename='scripts/script.js') }}"></script> -->
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/style.css') }}">
+    <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet"/>
+  </head>
+  <body>
+    <div class="container">
+
+      <div class="row">
+          <form role="form" method="POST" action="/">
+            <div class="form-group">
+              <div class="container">
+                <div class="row">
+                  <div class="col-xl-">
+                    <h1>Find NBA tickets with a Decent View and Price </h1>
+                  </div>
+                </div>
+                <br>
+                <div class="row">
+                  <div class="col">
+                    <input type="text" name="team" class="form-control" id="team_box" placeholder="Enter team">
+                  </div>
+                  <div class="col">
+                    <input type="date" name="date" class="form-control" id="date" style="max-width: 200px;">
+                  </div>                  
+                  <br>
+                  <div class="col">
+                    <select name="num_tickets" class="form-control" id="num_tickets" style="max-width: 100px;">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>
+                  </div>
+                  <div class="col">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                  </div>
+                </div>
+            </div>
+            <br>
+          </form>
+          <br>
+          {% for error in list_errors %}
+            <h4>{{ error }}</h4>
+          {% endfor %}
+          <br>
+      </div>
+
+      <div class="row">
+        {% if seat_results_1 %}
+          {% for i in range(3) %}
+            <div class="col-sm">
+                <img src="{{ url_for('static', filename='sixers/' + seat_results_1[i][0]['image'] + '.jpeg') }}" align="middle" class="img-fluid" />            
+                <br>
+                <div id="results">
+                  <table class="table table-striped" style="max-width: 500px;" id="year_table">
+                    <thead>
+                      <tr>
+                        <th class="text-center">Row</th>
+                        <th class="text-center">Number of tickets</th>
+                        <th class="text-center">Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for result in seat_results_1[i]%}
+                        {% if result["row"] != "" %}
+                          <tr>
+                            <td class="text-center">{{ result["row"] }}</td>
+                            <td class="text-center">{{ result["num_tickets"] }}</td>
+                            <td class="text-center">{{ result["price"] }}</td>
+                          </tr>
+                        {% endif %}
+                      {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                  </table>
+                </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+       <div class="row">
+        {% if seat_results_2 %}
+          {% for i in range(3) %}
+            <div class="col-sm">
+                <img src="{{ url_for('static', filename='sixers/' + seat_results_2[i][0]['image'] + '.jpeg') }}" align="middle" class="img-fluid" />            
+                <br>
+                <div id="results">
+                  <table class="table table-striped" style="max-width: 500px;" id="year_table">
+                    <thead>
+                      <tr>
+                        <th class="text-center">Row</th>
+                        <th class="text-center">Number of tickets</th>
+                        <th class="text-center">Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for result in seat_results_2[i]%}
+                        {% if result["row"] != "" %}
+                          <tr>
+                            <td class="text-center">{{ result["row"] }}</td>
+                            <td class="text-center">{{ result["num_tickets"] }}</td>
+                            <td class="text-center">{{ result["price"] }}</td>
+                          </tr>
+                        {% endif %}
+                      {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                  </table>
+                </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+      </div>
+
+    </div>
+    <br><br>
+    <!-- <script src="//code.jquery.com/jquery-1.11.0.min.js"></script> -->
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+      /*$(function() {
+        for (var i = 0; i < data.length; i++) {
+          $('#year_table').myfunction();
+        }
+
+      });*/
+
+      $(function() {
+        var teams = [];
+        function loadTeams() {
+          jQuery.getJSON("/teams", function(data, status, xhr) {
+            for (var i = 0; i < data.length; i++) {
+              teams.push(data[i].name)
+            }
+          })
+        }
+        loadTeams();
+        $("#team_box").autocomplete({
+            source: function(request, response) {
+                var results = $.ui.autocomplete.filter(teams, request.term);
+                response(results.slice(0, 10));
+            }
+        })
+      });
+    </script>
+
+    <!-- <script src="{{ url_for('static', filename='scripts/test.js') }}"></script> -->
+  </body>
+</html>
